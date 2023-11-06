@@ -1,7 +1,7 @@
 from deepface import DeepFace
 import cv2
 import time
-from src.types.emotion import Emotion
+from src.data.models.emotion import EmotionStats
 
 
 class EmotionDetector:
@@ -12,7 +12,7 @@ class EmotionDetector:
     def stop_detection(self):
         self.continue_detection = True
 
-    def start_detection(self, interval, callback):
+    def start_detection(self, interval_secs, callback):
         self.continue_detection = False
 
         # Open the webcam
@@ -27,19 +27,20 @@ class EmotionDetector:
 
             try:
                 # Perform emotion detection using DeepFace
-                result = DeepFace.analyze(frame, actions=['emotion'])
+                result = DeepFace.analyze(frame, actions=['emotion'], silent=True)
 
                 # Extract the emotion
                 emotion = result[0]
-                print(emotion)
 
-                callback(Emotion(emotion))
+                #print(emotion)
+                callback(EmotionStats(emotion))
+                #print('callback called')
 
                 # Display the emotion
                 #cv2.putText(frame, f'Emotion: {emotion}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
 
                 # Display the resulting frame
-                #cv2.imshow('Emotion Detection', frame)
+                cv2.imshow('Emotion Detection', frame)
 
                 # Break the loop when 'q' key is pressed
                 if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -49,7 +50,7 @@ class EmotionDetector:
                 print("No face detected")
 
             # Break the loop when stop_detection is True
-            time.sleep(interval)
+            time.sleep(interval_secs)
 
         # Release the webcam and close all windows
         cap.release()

@@ -6,7 +6,7 @@
 
 from enum import Enum
 
-class Emotion(Enum):
+class Emotions(Enum):
     ANGRY = 'angry'
     DISGUST = 'disgust'
     FEAR = 'fear'
@@ -15,18 +15,22 @@ class Emotion(Enum):
     SURPRISE = 'surprise'
     NEUTRAL = 'neutral'
 
+class Emotion:
+    matcher = {
+        'angry': Emotions.ANGRY,
+        'disgust': Emotions.DISGUST,
+        'fear': Emotions.FEAR ,
+        'happy': Emotions.HAPPY ,
+        'sad': Emotions.SAD ,
+        'surprise': Emotions.SURPRISE ,
+        'neutral': Emotions.NEUTRAL ,
+    }
+    def __init__(self, emotion: str):
+        self.emotion = self.matcher[emotion]
+        if emotion == None:
+            raise ValueError('emotion cannot be None')
+
 class EmotionStats:
-    def __init__(self, emotion) -> None:
-        self.angry = emotion['angry']
-        self.disgust = emotion['disgust']
-        self.fear = emotion['fear']
-        self.happy = emotion['happy']
-        self.sad = emotion['sad']
-        self.surprise = emotion['surprise']
-        self.neutral = emotion['neutral']
-
-class EmotionTracker:
-
     def __init__(self, obj) -> None:
         if type(obj) != dict:
             raise TypeError('obj must be a dict')
@@ -40,11 +44,16 @@ class EmotionTracker:
         if 'region' not in obj.keys():
             raise KeyError('obj must have region key')
 
-        self.dominant_emotion : Emotion = obj['dominant_emotion']
-
+        self.dominant_emotion = Emotion(obj['dominant_emotion'])
         self.region = obj['region']
-        
-        self.emotionStats = EmotionStats(obj['emotion'])
+        self.angry = obj['emotion']['angry']
+        self.disgust = obj['emotion']['disgust']
+        self.fear = obj['emotion']['fear']
+        self.happy = obj['emotion']['happy']
+        self.sad = obj['emotion']['sad']
+        self.surprise = obj['emotion']['surprise']
+        self.neutral = obj['emotion']['neutral']
+
 
     def __str__(self) -> str:
         return f'EmotionTracker({self.dominant_emotion}'

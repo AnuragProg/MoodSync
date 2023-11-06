@@ -1,15 +1,13 @@
-from clients.emotion_detector import EmotionDetector
-from concurrent import futures
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv(filename='.env'))
 
-from src.types.emotion import Emotion
+from src.presenter.home import App
+import sqlite3 as sql
 
 
-executor = futures.ThreadPoolExecutor(max_workers=2)
-
-emotion_detector = EmotionDetector()
-
-def callback(emotion: Emotion):
-    print(f'Emotion detected: {emotion.name}')
-
-#executor.submit(emotion_detector.start_detection, 5, callback)
-emotion_detector.start_detection(1, callback)
+if __name__ == '__main__':
+    db = sql.connect('moodsync.db', check_same_thread=False)
+    #vs = VideoService()
+    #print(vs.get_videos('happy'))
+    app = App(db)
+    app.mainloop()
