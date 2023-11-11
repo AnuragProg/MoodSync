@@ -47,7 +47,7 @@ For a detailed execution flow, refer to the Execution Flow Diagram.
 
 1. Clone the repository.
 2. Install the required dependencies using `pip install -r requirements.txt`.
-3. Run `python src/presenter/app.py` to launch MoodSync.
+3. Run `python src/app.py` to launch MoodSync.
 
 ## Screenshots
 
