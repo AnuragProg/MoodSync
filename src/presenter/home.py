@@ -2,12 +2,11 @@ import customtkinter as ctk
 from customtkinter.windows.widgets.image import CTkImage
 from src.data.models.emotion import EmotionStats
 from src.data.models.video import Video
-from time import sleep
-from PIL import Image, ImageTk
+from PIL import Image
 import requests
 from io import BytesIO
 from concurrent import futures
-from src.presenter.request_executor import RequestExecutor, threading
+from src.presenter.request_executor import RequestExecutor
 from src.data.emotion_detector import EmotionDetector
 from sqlite3 import Connection
 import webbrowser
@@ -22,7 +21,6 @@ class App(ctk.CTk):
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
-
         self.emotion_detector = EmotionDetector()
         self.emotion_detector_executor = futures.ThreadPoolExecutor(max_workers=1)
         self.request_executor_executor = futures.ThreadPoolExecutor(max_workers=1)
@@ -31,14 +29,17 @@ class App(ctk.CTk):
 
         self.emotion_detector_executor.submit(
             self.emotion_detector.start_detection, 
-            15, # secs
+            5, # secs
             self.make_request
         )
         self.bind('<Destroy>', self.on_close)
         self.current_frame: ctk.CTkScrollableFrame | None = None
+        self.videos: list[Video] = []
 
-    def ui(self, videos: list[Video]):
-        self.current_frame = frame = ctk.CTkScrollableFrame(self)
+    def ui(self):
+        videos = self.videos
+        frame = ctk.CTkScrollableFrame(self)
+        self.current_frame = frame
         frame.grid(row=0, column=0, padx=0, pady=0, sticky='nsew')
         frame.grid_columnconfigure((0,1), weight=1)
         #label = ctk.CTkLabel(self, text='Videos')
@@ -66,7 +67,7 @@ class App(ctk.CTk):
 
     def get_thumbnail(self, video: Video) -> CTkImage:
         parsed_img = Image.open(BytesIO(requests.get(video.thumbnail).content))
-        img_component = ctk.CTkImage(parsed_img, parsed_img, (100, 100))
+        img_component = ctk.CTkImage(parsed_img, parsed_img, (400, 300))
         return img_component
 
     def on_close(self, _):
@@ -81,9 +82,7 @@ class App(ctk.CTk):
             callback=self.refresh
         )
 
+    # make changes to reuse frame and destroy children instead
     def refresh(self, videos: list[Video]):
-        if self.current_frame:
-            self.current_frame.destroy()
-        print('refresh', threading.currentThread().name)
-        self.after(0, lambda: self.ui(videos))
-
+        self.videos = videos
+        self.after(500, self.ui)

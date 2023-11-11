@@ -40,7 +40,7 @@ class EmotionDetector:
                 #cv2.putText(frame, f'Emotion: {emotion}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
 
                 # Display the resulting frame
-                cv2.imshow('Emotion Detection', frame)
+                #cv2.imshow('Emotion Detection', frame)
 
                 # Break the loop when 'q' key is pressed
                 if cv2.waitKey(1) & 0xFF == ord('q'):

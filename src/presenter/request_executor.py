@@ -5,7 +5,6 @@ from src.domain.video_service import VideoService
 from src.data.models.video import Video
 from typing import Callable
 from sqlite3 import Connection
-from threading import Thread
 
 
 class Request:
